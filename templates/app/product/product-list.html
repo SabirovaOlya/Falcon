@@ -126,8 +126,8 @@
                                                 <span class="ms-2 d-none d-md-inline-block">Not Available</span>
                                             </button>
                                         {% else %}
-                                            <a class="btn btn-sm btn-{% if user|is_added:product %}danger{% else %}primary{% endif %} d-lg-block mt-lg-2" 
-                                               href="{% url 'add_to_cart' product.id %}?next={{ request.path }}">
+                                            <a class="btn btn-sm btn-{% if user|is_added:product %}danger{% else %}primary{% endif %} d-lg-block mt-lg-2"
+                                               href="{% url 'add_to_cart' product.id %}">
                                                 {% if not user|is_added:product %}
                                                     <span class="fas fa-cart-plus"> </span>
                                                 {% endif %}

@@ -1,7 +1,9 @@
-from django.db.models import Model, ForeignKey, CASCADE, PositiveIntegerField, BooleanField
+import uuid
+from django.db.models import Model, ForeignKey, CASCADE, PositiveIntegerField, BooleanField, UUIDField
 
 
 class CartItem(Model):
+    id = UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = ForeignKey('app.User', related_name='user_cart_items', on_delete=CASCADE)
     product = ForeignKey('app.Product', related_name='product_cart_items', on_delete=CASCADE)
     quantity = PositiveIntegerField(default=1)

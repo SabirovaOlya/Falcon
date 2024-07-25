@@ -48,7 +48,7 @@
         <! -- CART -->
         <li class="nav-item">
             <a class="nav-link px-0 notification-indicator notification-indicator-warning notification-indicator-fill fa-icon-wait"
-               href="../../../app/e-commerce/shopping-cart.html">
+               href="{% url 'cart_details_page' %}">
                 <span class="fas fa-shopping-cart" style="font-weight: 800; font-size: 33px; color: #4040ec" data-fa-transform="shrink-7"></span>
                 <span class="notification-indicator-number">{{ user|cart_items_count  }}</span>
             </a>
