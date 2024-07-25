@@ -74,3 +74,13 @@ class Product(models.Model):
 class ProductImage(models.Model):
     image = models.ImageField(upload_to='products/%Y/%m/%d/')
     product = models.ForeignKey('app.Product', models.CASCADE, related_name='images')
+
+
+class FavouriteProduct(models.Model):
+    product = models.ForeignKey('app.Product', models.CASCADE, related_name='favourite_products')
+    user = models.ForeignKey('app.User', models.CASCADE, related_name='user_favourite_products')
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_liked = models.BooleanField(default=False, blank=True, null=True)
+
+    def __str__(self):
+        return self.product.name
