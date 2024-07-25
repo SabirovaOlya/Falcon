@@ -29,15 +29,16 @@ class ProductListView(ListView):
         context = super().get_context_data(object_list=object_list, **kwargs)
         context['categories'] = Category.objects.all()
 
-        # Get the IDs of products in the user's cart
         user = self.request.user
         if user.is_authenticated:
-            cart_items = CartItem.objects.filter(user=user)
-            cart_product_ids = cart_items.values_list('product_id', flat=True)
+            cart_count = CartItem.objects.filter(user=user).count()
+            favourites_count = FavouriteProduct.objects.filter(user=user).count()
         else:
-            cart_product_ids = []
+            cart_count, favourites_count = 0, 0
 
-        context['cart_product_ids'] = cart_product_ids
+        context['cart_product_count'] = cart_count
+        context['favourites_count'] = favourites_count
+
         return context
 
 
@@ -49,6 +50,17 @@ class ProductDetailView(DetailView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
         context['categories'] = Category.objects.all()
+
+        user = self.request.user
+        if user.is_authenticated:
+            cart_count = CartItem.objects.filter(user=user).count()
+            favourites_count = FavouriteProduct.objects.filter(user=user).count()
+        else:
+            cart_count, favourites_count = 0, 0
+
+        context['cart_product_count'] = cart_count
+        context['favourites_count'] = favourites_count
+
         return context
 
 
@@ -95,11 +107,47 @@ class AddToCartView(LoginRequiredMixin, View):
         return redirect(next_url)
 
 
+class IncreaseCartView(LoginRequiredMixin, View):
+    def get(self, request, pk, *args, **kwargs):
+        product = get_object_or_404(Product, id=pk)
+        cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
+
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
+
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        else:
+            return redirect('product_detail', pk=pk)
+
+
+class DecreaseCartView(LoginRequiredMixin, View):
+    def get(self, request, pk, *args, **kwargs):
+        product = get_object_or_404(Product, id=pk)
+        cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
+
+        if not created and cart_item.quantity > 1:
+            cart_item.quantity -= 1
+            cart_item.save()
+        else:
+            cart_item.delete()
+
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        else:
+            return redirect('product_detail', pk=pk)
+
+
 class FavouriteProductView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         obj, created = FavouriteProduct.objects.get_or_create(user=request.user, product_id=pk)
+
         if not created:
             obj.delete()
+
         referer = request.META.get('HTTP_REFERER')
         if referer:
             return redirect(referer)

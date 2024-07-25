@@ -2,7 +2,7 @@ from django.urls import path, reverse_lazy
 from django.contrib.auth.views import LoginView
 from django.views.generic import TemplateView
 from .views import (ProductListView, RegisterCreateView, LogoutView, ProductDetailView, AddToCartView,
-                    FavouriteProductView)
+                    FavouriteProductView, IncreaseCartView, DecreaseCartView)
 
 
 urlpatterns = [
@@ -18,6 +18,8 @@ urlpatterns = [
     path('logout', LogoutView.as_view(), name='logout_page'),
 
     path('card/add/<uuid:pk>/', AddToCartView.as_view(), name='add_to_cart'),
+    path('card/increase/<uuid:pk>/', IncreaseCartView.as_view(), name='increase_cart'),
+    path('card/decrease/<uuid:pk>/', DecreaseCartView.as_view(), name='decrease_cart'),
     path('favourite-product/add/<uuid:pk>/', FavouriteProductView.as_view(), name='add_favourite_product'),
 
 ]
