@@ -632,7 +632,7 @@
             ],
             [
               8719,
-              'n-ary product'
+              'n-ary product.py'
             ],
             [
               8743,

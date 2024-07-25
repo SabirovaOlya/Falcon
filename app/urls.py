@@ -6,7 +6,7 @@ from .views import ProductListView, RegisterCreateView, LogoutView, ProductDetai
 
 urlpatterns = [
     path('', ProductListView.as_view(), name='product_list_page'),
-    path('product/detail/<uuid:pk>/', ProductDetailView.as_view(), name='product_detail_page'),
+    path('product.py/detail/<uuid:pk>/', ProductDetailView.as_view(), name='product_detail_page'),
     #path('settings', SettingsUpdateView.as_view(), name='settings_page'),
     path('register', RegisterCreateView.as_view(), name='register_page'),
     path('login', LoginView.as_view(

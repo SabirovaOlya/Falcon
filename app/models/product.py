@@ -1,5 +1,4 @@
 import uuid
-from django.contrib.auth.models import AbstractUser
 from django.db import models
 from mptt.models import MPTTModel
 from django_ckeditor_5.fields import CKEditor5Field
@@ -75,7 +74,3 @@ class Product(models.Model):
 class ProductImage(models.Model):
     image = models.ImageField(upload_to='products/%Y/%m/%d/')
     product = models.ForeignKey('app.Product', models.CASCADE, related_name='images')
-
-
-class User(AbstractUser):
-    pass
