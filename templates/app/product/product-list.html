@@ -1,0 +1,149 @@
+{% extends 'app/product/base.html' %}
+{% block content %}
+{% load custom_filters %}
+<div class="content">
+    {% include 'app/components/header.html' %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row flex-between-center">
+                <div class="col-sm-auto mb-2 mb-sm-0">
+                    <h6 class="mb-0">Showing {{ page_obj.start_index }}/{{ page_obj.end_index }} of {{ products.count }} Products</h6>
+                </div>
+                <div class="col-sm-auto">
+                    <div class="row gx-2 align-items-center">
+                        <div class="col-auto">
+                            <form class="row gx-2">
+                                <div class="col-auto"><small>Sort by: </small></div>
+                                <div class="col-auto">
+                                    <select class="form-select form-select-sm" aria-label="Bulk actions">
+                                        <option selected=""><a href="{% url 'product_list_page' %}?sorted_by={{ 'best' }}">Best Match</a></option>
+                                        <option value="Refund"><a href="{% url 'product_list_page' %}?product_status={{ 'new' }}">Newest</a></option>
+                                        <option value="Delete"><a href="{% url 'product_list_page' %}?product_status={{ 'price' }}">Price</a></option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body p-0 overflow-hidden">
+            <div class="row g-0">
+                {% for product in products %}
+                <div class="col-12 p-card {% if forloop.counter0|divisibleby:2 %}{% else %}bg-100{% endif %}">
+                    <div class="row">
+                        <div class="col-sm-5 col-md-4">
+                            <div class="position-relative h-sm-100">
+                                <div class="swiper-container theme-slider h-100"
+                                     data-swiper='{"autoplay":true,"autoHeight":true,"spaceBetween":5,"loop":true,"loopedSlides":5,"navigation":{"nextEl":".swiper-button-next","prevEl":".swiper-button-prev"}}'>
+                                    <div class="swiper-wrapper h-100">
+                                        {% for image in product.images.all %}
+                                            <div class="swiper-slide h-100"><a class="d-block h-sm-100"
+                                                                               href=""><img
+                                                    class="rounded-1 h-100 w-100 fit-cover"
+                                                    src="{{ image.image.url }}"
+                                                    alt=""/></a>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="swiper-nav">
+                                        <div class="swiper-button-next swiper-button-white"></div>
+                                        <div class="swiper-button-prev swiper-button-white"></div>
+                                    </div>
+                                </div>
+                                {% if product.is_new %}
+                                    <div class="badge rounded-pill bg-success position-absolute top-0 end-0 me-2 mt-2 fs--2 z-index-2">
+                                        New
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-sm-7 col-md-8">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <h5 class="mt-3 mt-sm-0">
+                                        <a class="text-dark fs-0 fs-lg-1"
+                                           href="{% url 'product_detail_page' product.id %}">
+                                        {{ product.name }}
+                                        </a>
+                                    </h5>
+                                    <p class="fs--1 mb-2 mb-md-3"><a class="text-500" href="{% url 'product_list_page' %}?category={{ product.category.id }}">{{ product.category.name }}</a></p>
+                                    <ul class="list-unstyled d-none d-lg-block">
+                                          {% for data in product.get_specifications %}
+                                                <li><span class="fas fa-circle"
+                                                          data-fa-transform="shrink-12"></span><span>{{ data }}</span>
+                                                </li>
+                                          {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="col-lg-4 d-flex justify-content-between flex-column">
+                                    <div>
+                                        {% if product.discount_percent > 0 %}
+                                            <h4 class="fs-1 fs-md-2 text-warning mb-0">
+                                                ${{ product.current_price }}</h4>
+                                            <h5 class="fs--1 text-500 mb-0 mt-1">
+                                                <del>${{ product.price }}</del>
+                                                <span class="ms-1">-{{ product.discount_percent }}%</span>
+                                            </h5>
+                                        {% else %}
+                                            <h4 class="fs-1 fs-md-2 text-warning mb-0">{{ product.price }}</h4>
+                                        {% endif %}
+                                        <div class="mb-2 mt-3"><span
+                                                class="fa fa-star text-warning"></span><span
+                                                class="fa fa-star text-warning"></span><span
+                                                class="fa fa-star text-warning"></span><span
+                                                class="fa fa-star text-warning"></span><span
+                                                class="fa fa-star-half-alt text-warning star-icon"></span><span
+                                                class="ms-1">(20)</span>
+                                        </div>
+                                        <p class="fs--1 mb-1">
+                                            Shipping Cost:
+                                                <strong>${{ product.shipping_cost }}</strong>
+                                        </p>
+                                        {% if product.quantity > 0 %}
+                                            <p class="fs--1 mb-1">Stock: <strong
+                                                    class="text-success"> Available
+                                            </strong></p>
+                                        {% else %}
+                                            <p class="fs--1 mb-1">Stock: <strong
+                                                    class="text-danger">Sold-Out</strong>
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mt-2">
+                                        <a {% if user|is_liked:product %}style="background-color: red"{% endif %}
+                                        class="btn btn-sm btn{% if not user|is_liked:product %}-outline{% endif %}-secondary border-300 d-lg-block me-2 me-lg-0"
+                                        href="{% url 'add_favourite_product' product.pk %}">
+                                            <span class="far fa-heart"></span>
+                                            <span class="ms-2 d-none d-md-inline-block">Favourite</span>
+                                        </a>
+                                        {% if product.quantity <= 0 %}
+                                             <button class="btn btn-sm btn-primary d-lg-block mt-lg-2" 
+                                               href="">
+                                                <span class="fas fa-cart-plus"> </span>
+                                                <span class="ms-2 d-none d-md-inline-block">Not Available</span>
+                                            </button>
+                                        {% else %}
+                                            <a class="btn btn-sm btn-{% if user|is_added:product %}danger{% else %}primary{% endif %} d-lg-block mt-lg-2"
+                                               href="{% url 'add_to_cart' product.id %}">
+                                                {% if not user|is_added:product %}
+                                                    <span class="fas fa-cart-plus"> </span>
+                                                {% endif %}
+                                                <span class="ms-2 d-none d-md-inline-block">{% if user|is_added:product %}Delete from cart{% else %}Add to Cart{% endif %}</span>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% include 'app/components/pagination.html' %}
+    </div>
+</div>
+{% endblock content %}
