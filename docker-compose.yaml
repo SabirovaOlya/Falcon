@@ -1,0 +1,29 @@
+services:
+  django_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python3 manage.py runserver 0:8042
+    ports:
+      - 8000:8042
+    volumes:
+      - static_volume_falcon:/app/static
+      - media_volume_falcon:/app/media
+    env_file:
+      - .env
+    depends_on:
+      - postgres_service
+
+  postgres_service:
+    image: postgres:alpine
+    environment:
+      - POSTGRES_PASSWORD=1
+    ports:
+      - 5440:5432
+    volumes:
+      - pg_data_falcon:/var/lib/postgresql/data
+
+volumes:
+  pg_data_falcon:
+  static_volume_falcon:
+  media_volume_falcon:

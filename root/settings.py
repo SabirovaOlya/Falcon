@@ -1,10 +1,8 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 DB_NAME = os.getenv('DB_NAME')
 DB_USER = os.getenv('DB_USER')
@@ -59,24 +57,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'root.wsgi.application'
 AUTH_USER_MODEL = 'app.User'
-#
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': DB_NAME,
-#         'USER': DB_USER,
-#         'PASSWORD': DB_PASSWORD,
-#         'HOST': DB_HOST,
-#         'PORT': DB_PORT,
-#     }
-# }
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -102,13 +100,14 @@ TIME_ZONE = 'Asia/Tashkent'
 USE_I18N = True
 USE_TZ = True
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') if os.getenv('DEBUG') == 'True' else '/var/www/sabirova/django_falcon/backend/media/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static') if os.getenv('DEBUG') == 'True' else '/var/www/sabirova/django_falcon/backend/static/'
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
-#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-STATIC_ROOT = '/var/www/sabirova/django_falcon/backend/static/'
-MEDIA_ROOT = '/var/www/sabirova/django_falcon/backend/media/'
+# STATIC_ROOT = '/var/www/sabirova/django_falcon/backend/static/'
+# MEDIA_ROOT = '/var/www/sabirova/django_falcon/backend/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login_page'

@@ -47,3 +47,13 @@ def cart_items_count(user):
         return 0
     except CartItem.DoesNotExist:
         return 0
+
+
+@register.filter
+def cart_total_sum(cart_list):
+    return sum(cart.quantity * cart.product.current_price for cart in cart_list)
+
+
+@register.filter
+def cart_items_quantity(cart_list):
+    return sum(cart.quantity for cart in cart_list)
