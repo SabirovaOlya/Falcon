@@ -2,15 +2,14 @@ services:
   django_service:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: deploy/django/Dockerfile
     command: python3 manage.py runserver 0:8042
     ports:
       - 8000:8042
     volumes:
       - static_volume_falcon:/app/static
       - media_volume_falcon:/app/media
-    env_file:
-      - .env
+    env_file: .env
     depends_on:
       - postgres_service
 
@@ -23,7 +22,57 @@ services:
     volumes:
       - pg_data_falcon:/var/lib/postgresql/data
 
+  celery_service:
+    build:
+      context: .
+      dockerfile: deploy/django/Dockerfile
+    command: /celery
+    volumes:
+      - static_volume_falcon:/app/static
+      - static_volume_falcon:/app/media
+    env_file: .env
+    depends_on:
+      - postgres_service
+      - redis_service
+
+  celery_beat_service:
+    build:
+      context: .
+      dockerfile: deploy/django/Dockerfile
+    command: /celery-beat
+    volumes:
+      - static_volume_falcon:/app/static
+      - static_volume_falcon:/app/media
+    env_file: .env
+    depends_on:
+      - postgres_service
+      - redis_service
+
+  flower_service:
+    build:
+      context: .
+      dockerfile: deploy/django/Dockerfile
+    command: /flower
+    volumes:
+      - static_volume_falcon:/app/static
+      - static_volume_falcon:/app/media
+    env_file: .env
+    ports:
+      - 5001:5001
+    depends_on:
+      - postgres_service
+      - redis_service
+      - celery_service
+
+  redis_service:
+    image: redis:alpine
+    #    ports:
+    #      - 6380:6379
+    volumes:
+      - redis_data_falcon:/data
+
 volumes:
   pg_data_falcon:
   static_volume_falcon:
   media_volume_falcon:
+  redis_data_falcon:

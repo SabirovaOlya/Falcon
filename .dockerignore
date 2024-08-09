@@ -28,4 +28,4 @@ src/node_modules
 web/media
 web/static/CACHE
 stats
-Dockerfile
+deploy/django/Dockerfile
